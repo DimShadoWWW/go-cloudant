@@ -14,8 +14,8 @@ import (
 // Client ...
 type Client struct {
 	Client   *couchdb.Client
-	username string
-	password string
+	Username string
+	Password string
 }
 
 // DB ...
@@ -29,7 +29,7 @@ type DB struct {
 // DB returns the DB object without verifying its existence.
 func (c *Client) DB(name string) *DB {
 	dbPath := c.Client.URL() + "/" + name
-	return &DB{c.Client.DB(name), c.username, c.password, dbPath}
+	return &DB{c.Client.DB(name), c.Username, c.Password, dbPath}
 }
 
 // Options ...
@@ -67,7 +67,7 @@ func NewClientWithAPIKey(username string, apikey string, password string, httpCl
 	}
 	url, _ := url.Parse(fmt.Sprintf("https://%s.cloudant.com", username))
 	couchClient := couchdb.NewClient(url, httpClient, auth)
-	return &Client{Client: couchClient, username: apikey, password: password}
+	return &Client{Client: couchClient, Username: apikey, Password: password}
 }
 
 // IsAlive check whether a server is alive.
@@ -83,7 +83,7 @@ func (c *Client) CreateDB(dbName string) (*DB, error) {
 		return nil, err
 	}
 	dbPath := c.Client.URL() + "/" + dbName
-	return &DB{db, c.username, c.password, dbPath}, nil
+	return &DB{db, c.Username, c.Password, dbPath}, nil
 }
 
 // EnsureDB ensures that a database with the given name exists.
@@ -94,7 +94,7 @@ func (c *Client) EnsureDB(name string) (*DB, error) {
 		return nil, err
 	}
 	dbPath := c.Client.URL() + "/" + name
-	return &DB{db, c.username, c.password, dbPath}, nil
+	return &DB{db, c.Username, c.Password, dbPath}, nil
 }
 
 // DeleteDB ...
