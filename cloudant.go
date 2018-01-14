@@ -3,10 +3,12 @@ package cloudant
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"net/url"
 	"strconv"
 
+	couchdb "github.com/cabify/go-couchdb"
 	request "github.com/parnurzeal/gorequest"
-	couchdb "github.com/timjacobi/go-couchdb"
 )
 
 // Client ...
@@ -53,17 +55,19 @@ type Index struct {
 }
 
 // NewClient ...
-func NewClient(username string, password string) (*Client, error) {
-	return NewClientWithAPIKey(username, username, password)
+func NewClient(username string, password string, httpClient *http.Client) *Client {
+	return NewClientWithAPIKey(username, username, password, httpClient)
 }
 
 // NewClientWithAPIKey ...
-func NewClientWithAPIKey(username string, apikey string, password string) (*Client, error) {
+func NewClientWithAPIKey(username string, apikey string, password string, httpClient *http.Client) *Client {
 	auth := couchdb.BasicAuth(apikey, password)
-	url := fmt.Sprintf("https://%s.cloudant.com", username)
-	couchClient, err := couchdb.NewClient(url, nil)
-	couchClient.SetAuth(auth)
-	return &Client{Client: couchClient, username: apikey, password: password}, err
+	if httpClient == nil {
+		httpClient = &http.Client{}
+	}
+	url, _ := url.Parse(fmt.Sprintf("https://%s.cloudant.com", username))
+	couchClient := couchdb.NewClient(url, httpClient, auth)
+	return &Client{Client: couchClient, username: apikey, password: password}
 }
 
 // IsAlive check whether a server is alive.
