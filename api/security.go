@@ -23,7 +23,7 @@ func (c *Client) Security(name string, api *Security) error {
 	resp, body, errs := c.conn().Get(c.URL + path).End()
 	if errs != nil {
 		for i, e := range errs {
-			fmt.Printf("error %v: %#v\n", i, e.Error())
+			fmt.Printf("Security error %v: %#v\n", i, e.Error())
 		}
 		return errs[0]
 	}
@@ -43,8 +43,12 @@ func (c *Client) Security(name string, api *Security) error {
 func (c *Client) PutSecurity(name string, obj Security) error {
 	path := fmt.Sprintf("_api/v2/db/%s/_security", name)
 
+	fmt.Printf("security object: %#v\n", obj)
 	resp, _, errs := c.conn().Put(c.URL + path).Send(obj).End()
 	if errs != nil {
+		for i, e := range errs {
+			fmt.Printf("PutSecurity error %v: %#v\n", i, e.Error())
+		}
 		return errs[0]
 	}
 	if resp.StatusCode >= 400 {
